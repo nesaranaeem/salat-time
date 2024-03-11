@@ -7,7 +7,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg shadow p-4 text-center">
-      <p className="text-base font-bold">Disclaimer</p>
+      <p className="text-base font-bold">Disclaimer:</p>
       <p className="text-base text-gray-700 dark:text-gray-300">
         {t("disclaimer")}
       </p>
