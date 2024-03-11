@@ -60,6 +60,7 @@ export default function Home() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
+        console.log(latitude, longitude);
         const location = await reverseGeocode(latitude, longitude);
         if (location) {
           setLocationName(location);
@@ -84,10 +85,25 @@ export default function Home() {
         setTimes(prayerTimes);
         setLoading(false); // Stop loading once data is fetched
       },
-      () => {
+      async () => {
         toast.error(
           "Location permission is necessary for accurate times. Showing times for Dhaka."
         );
+        const dhakaLatitude = 23.7691737;
+        const dhakaLongitude = 90.1354586;
+        setLocationName("Dhaka");
+
+        const currentDate = new Date();
+        const formattedDate = `${currentDate.getFullYear()}-${String(
+          currentDate.getMonth() + 1
+        ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
+        const prayerTimes = await getPrayerTimes(
+          dhakaLatitude,
+          dhakaLongitude,
+          formattedDate,
+          method
+        );
+        setTimes(prayerTimes);
         setLoading(false); // Ensure to stop loading even if there is an error
       }
     );
@@ -96,9 +112,14 @@ export default function Home() {
   }, [method]);
   const currentDate = new Date();
   const showRamadanCard =
-    isRamadan(currentDate) && locationName.includes("Bangladesh");
+    isRamadan(currentDate) &&
+    (locationName.includes("Bangladesh") || locationName.includes("Dhaka"));
   console.log(showRamadanCard);
   let sehriIftarTimes = {};
+
+  if (showRamadanCard) {
+    sehriIftarTimes = calculateIftarSehri(times);
+  }
 
   if (showRamadanCard) {
     sehriIftarTimes = calculateIftarSehri(times);
