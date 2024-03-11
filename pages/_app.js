@@ -1,7 +1,6 @@
-// pages/_app.js
+import "../lib/i18n"; // Import your i18n configuration
 import { useState, useEffect } from "react";
 import "../styles/globals.css";
-import "../lib/i18n"; // Import your i18n configuration
 
 function MyApp({ Component, pageProps }) {
   const [theme, setTheme] = useState("light");

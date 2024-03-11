@@ -13,6 +13,10 @@ import PrayerCard from "../components/PrayerCard";
 import TimeFormatToggle from "../components/TimeFormatToggle";
 import translateNumberToBengali from "../utils/translateNumberToBengali";
 import Head from "next/head";
+import isRamadan from "@/lib/isRamadan";
+import RamadanCard from "@/components/RamadanCard";
+import calculateIftarSehri from "@/lib/calculateIftarSehri";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const [times, setTimes] = useState({});
@@ -67,6 +71,7 @@ export default function Home() {
         }
 
         const currentDate = new Date();
+
         const formattedDate = `${currentDate.getFullYear()}-${String(
           currentDate.getMonth() + 1
         ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
@@ -89,7 +94,15 @@ export default function Home() {
 
     return () => clearInterval(intervalId);
   }, [method]);
+  const currentDate = new Date();
+  const showRamadanCard =
+    isRamadan(currentDate) && locationName.includes("Bangladesh");
+  console.log(showRamadanCard);
+  let sehriIftarTimes = {};
 
+  if (showRamadanCard) {
+    sehriIftarTimes = calculateIftarSehri(times);
+  }
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -125,7 +138,7 @@ export default function Home() {
         <Toaster />
         <Header isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
         <div className="container mx-auto p-4 dark:bg-gray-900 dark:text-white">
-          <h2 className="text-2xl mb-4 text-center">
+          <h2 className="text-2xl mb-2 text-center">
             {t("currentTime")}: {displayCurrentTime}
           </h2>
           {loading ? (
@@ -141,13 +154,15 @@ export default function Home() {
                 <div className="text-lg mb-2">
                   {t("nextPrayer")}:{" "}
                   <span className="font-semibold">
-                    {nextPrayerInfo.nextPrayer}
+                    {t(nextPrayerInfo.nextPrayer)}
                   </span>
                 </div>
                 <div className="text-lg">
                   {t("timeLeft")}:{" "}
                   <span className="font-semibold">
-                    {nextPrayerInfo.timeLeft}
+                    {i18n.language === "bn"
+                      ? translateNumberToBengali(nextPrayerInfo.timeLeft)
+                      : nextPrayerInfo.timeLeft}
                   </span>
                 </div>
               </div>
@@ -160,7 +175,7 @@ export default function Home() {
                 />
                 <button
                   onClick={toggleLanguage}
-                  className="mb-4 py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  className="mb-4 py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
                 >
                   {i18n.language === "en" ? "বাংলা" : "English"}
                 </button>
@@ -188,9 +203,19 @@ export default function Home() {
                   />
                 ))}
               </div>
+              {showRamadanCard && (
+                <RamadanCard
+                  sehriIftarTimes={sehriIftarTimes}
+                  isTwelveHourFormat={isTwelveHourFormat}
+                  toggleTimeFormat={() =>
+                    setIsTwelveHourFormat(!isTwelveHourFormat)
+                  }
+                />
+              )}
             </>
           )}
         </div>
+        {!loading && <Footer />}
       </div>
     </>
   );
