@@ -91,7 +91,7 @@ export default function Home() {
         );
         const dhakaLatitude = 23.7691737;
         const dhakaLongitude = 90.1354586;
-        setLocationName("Dhaka");
+        setLocationName("Dhaka Division");
 
         const currentDate = new Date();
         const formattedDate = `${currentDate.getFullYear()}-${String(
